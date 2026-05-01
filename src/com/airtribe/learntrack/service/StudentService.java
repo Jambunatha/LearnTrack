@@ -24,13 +24,8 @@ public class StudentService {
     }
 
 
-    public void listStudents() {
-        List<Student> students = studentRepository.findAll();
-        if (students.isEmpty()) {
-            System.out.println("No Students available");
-            return;
-        }
-        students.forEach(System.out::println);
+    public List<Student> listStudents() {
+        return studentRepository.findAll();
     }
 
     public Student findStudentById(int studentId) {
@@ -41,5 +36,6 @@ public class StudentService {
     public void deactivateStudent(int studentId) {
         Student student = findStudentById(studentId);
         student.setActive(false);
+        studentRepository.save(student);
     }
 }

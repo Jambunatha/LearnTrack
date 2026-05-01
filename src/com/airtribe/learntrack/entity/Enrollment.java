@@ -13,6 +13,16 @@ public class Enrollment {
     private EnrollmentStatus status;
 
     public Enrollment(int id, int studentId, int courseId) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Enrollment ID must be positive.");
+        }
+        if (studentId <= 0) {
+            throw new IllegalArgumentException("Student ID must be positive.");
+        }
+        if (courseId <= 0) {
+            throw new IllegalArgumentException("Course ID must be positive.");
+        }
+
         this.id = id;
         this.studentId = studentId;
         this.courseId = courseId;
@@ -22,10 +32,6 @@ public class Enrollment {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getStudentId() {

@@ -32,10 +32,10 @@ public class InputValidator {
 
     public static String readChoice(Scanner sc, String prompt, String... validOptions) {
         System.out.print(prompt + " (" + String.join("/", validOptions) + "): ");
-        String input = sc.nextLine().trim().toUpperCase();
+        String input = sc.nextLine().trim();
 
         for (String option : validOptions) {
-            if (input.equals(option.toUpperCase())) {
+            if (input.equalsIgnoreCase(option)) {
                 return option.toUpperCase();
             }
         }

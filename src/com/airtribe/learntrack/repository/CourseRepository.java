@@ -3,7 +3,6 @@ package com.airtribe.learntrack.repository;
 import com.airtribe.learntrack.entity.Course;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +19,6 @@ public class CourseRepository {
     }
 
     public List<Course> findAll() {
-        return Collections.unmodifiableList(courses);
+        return new ArrayList<>(courses);
     }
 }

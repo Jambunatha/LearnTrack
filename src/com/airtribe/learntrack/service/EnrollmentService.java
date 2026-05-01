@@ -8,6 +8,7 @@ import com.airtribe.learntrack.exception.EntityNotFoundException;
 import com.airtribe.learntrack.repository.EnrollmentRepository;
 import com.airtribe.learntrack.util.IdGenerator;
 
+import java.util.List;
 import java.util.Optional;
 
 public class EnrollmentService {
@@ -23,6 +24,10 @@ public class EnrollmentService {
         this.enrollmentRepository = enrollmentRepository;
     }
 
+    public void save(Enrollment enrollment) {
+        enrollmentRepository.save(enrollment);
+    }
+
     public Enrollment enrollStudent(int studentId, int courseId) {
         Student student = studentService.findStudentById(studentId);
         Course course = courseService.findCourseById(courseId);
@@ -33,18 +38,17 @@ public class EnrollmentService {
         if (CourseStatus.INACTIVE.equals(course.getStatus())) {
             throw new IllegalStateException("Enrollment failed: Course " + courseId + " is inactive.");
         }
-        Optional<Enrollment> enrollment = enrollmentRepository.findByStudentId(studentId);
-        if (enrollment.isPresent()) {
-            throw new IllegalStateException("Enrollment failed: Student " + studentId + " is already enrolled.");
-        }
 
         Enrollment newEnrollment = new Enrollment(IdGenerator.getNextEnrollmentId(), studentId, courseId);
-        enrollmentRepository.save(newEnrollment);
+        save(newEnrollment);
         return newEnrollment;
     }
 
-    public Enrollment findByStudentId(int studentId) {
-        return enrollmentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new EntityNotFoundException("No enrollments found for student ID: " + studentId));
+    public List<Enrollment> findByStudentId(int studentId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
+        if (enrollments.isEmpty()) {
+            throw new EntityNotFoundException("No enrollments found for student ID: " + studentId);
+        }
+        return enrollments;
     }
 }

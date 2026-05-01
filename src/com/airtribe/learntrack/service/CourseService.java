@@ -26,28 +26,12 @@ public class CourseService {
         return course;
     }
 
-    public void listCourses() {
-        List<Course> courses = courseRepository.findAll();
-        if (courses.isEmpty()) {
-            System.out.println("No Courses available");
-            return;
-        }
-        courses.forEach(System.out::println);
+    public List<Course> listCourses() {
+        return courseRepository.findAll();
     }
 
     public Course findCourseById(int courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course details not found with id: " + courseId));
-    }
-
-    public void activateOrDeactivateCourse(int courseId) {
-        Course course = findCourseById(courseId);
-        if (CourseStatus.INACTIVE.equals(course.getStatus())) {
-            course.setStatus(CourseStatus.ACTIVE);
-            System.out.println("Course activated.");
-        } else {
-            course.setStatus(CourseStatus.INACTIVE);
-            System.out.println("Course deactivated.");
-        }
     }
 }

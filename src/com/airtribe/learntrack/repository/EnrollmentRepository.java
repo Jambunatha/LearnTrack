@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EnrollmentRepository {
 
@@ -23,7 +24,9 @@ public class EnrollmentRepository {
         return Collections.unmodifiableList(enrollments);
     }
 
-    public Optional<Enrollment> findByStudentId(int studentId) {
-        return enrollments.stream().filter(enrollment -> enrollment.getStudentId() == studentId).findFirst();
+    public List<Enrollment> findByStudentId(int studentId) {
+        return enrollments.stream()
+                .filter(enrollment -> enrollment.getStudentId() == studentId)
+                .collect(Collectors.toList());
     }
 }

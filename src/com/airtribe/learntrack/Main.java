@@ -15,6 +15,7 @@ import com.airtribe.learntrack.service.EnrollmentService;
 import com.airtribe.learntrack.service.StudentService;
 import com.airtribe.learntrack.util.InputValidator;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -99,7 +100,7 @@ public class Main {
                         addStudent();
                         break;
                     case 2:
-                        studentService.listStudents();
+                        listStudents();
                         break;
                     case 3:
                         findStudentById();
@@ -129,6 +130,15 @@ public class Main {
         System.out.println("Student added: " + student);
     }
 
+    private void listStudents() {
+        List<Student> students = studentService.listStudents();
+        if (students.isEmpty()) {
+            System.out.println("No Students available");
+            return;
+        }
+        students.forEach(System.out::println);
+    }
+
     private void findStudentById() {
         int studentId = InputValidator.readInt(scanner, "Please enter student id: ");
         Student student = studentService.findStudentById(studentId);
@@ -156,7 +166,7 @@ public class Main {
                         addCourse();
                         break;
                     case 2:
-                        courseService.listCourses();
+                        listCourses();
                         break;
                     case 3:
                         activateOrDeactivateCourse();
@@ -179,6 +189,15 @@ public class Main {
         int duration = InputValidator.readInt(scanner, "Duration in weeks: ");
         Course course = courseService.addCourse(courseName, description, duration);
         System.out.println("Course added successfully: " + course);
+    }
+
+    private void listCourses() {
+        List<Course> courses = courseService.listCourses();
+        if (courses.isEmpty()) {
+            System.out.println("No Courses available");
+            return;
+        }
+        courses.forEach(System.out::println);
     }
 
     private void activateOrDeactivateCourse() {
@@ -247,14 +266,22 @@ public class Main {
 
     private void viewStudentEnrollments() {
         int studentId = InputValidator.readInt(scanner, "Enter student ID: ");
-        Enrollment enrollment = enrollmentService.findByStudentId(studentId);
-        System.out.println(enrollment);
+        List<Enrollment> enrollments = enrollmentService.findByStudentId(studentId);
+        enrollments.forEach(System.out::println);
     }
 
     private void markEnrollment() {
         int studentId = InputValidator.readInt(scanner, "Enter student ID: ");
-        Enrollment enrollment = enrollmentService.findByStudentId(studentId);
-        System.out.println("Enrollment found: " + enrollment.getStudentId() + " (Status: " + enrollment.getStatus() + ")");
+        List<Enrollment> enrollments = enrollmentService.findByStudentId(studentId);
+
+        for (int i = 0; i < enrollments.size(); i++) {
+            Enrollment e = enrollments.get(i);
+            System.out.println((i+1) + ". Course " + e.getCourseId() + " (Status: " + e.getStatus() + ")");
+        }
+
+        int choiceIndex = InputValidator.readInt(scanner, "Select enrollment number to update: ") - 1;
+        Enrollment enrollment = enrollments.get(choiceIndex);
+
         String choice = InputValidator.readChoice(scanner,
                 "Do you want to mark this enrollment as completed or cancelled?", "C", "X");
 
@@ -263,6 +290,7 @@ public class Main {
                 System.out.println("Enrollment is already marked as completed.");
             } else {
                 enrollment.setStatus(EnrollmentStatus.COMPLETED);
+                enrollmentService.save(enrollment);
                 System.out.println("Enrollment for student " + studentId + " has been marked as completed.");
             }
         } else if ("X".equals(choice)) {
@@ -270,6 +298,7 @@ public class Main {
                 System.out.println("Enrollment is already marked as cancelled.");
             } else {
                 enrollment.setStatus(EnrollmentStatus.CANCELLED);
+                enrollmentService.save(enrollment);
                 System.out.println("Enrollment for student " + studentId + " has been cancelled.");
             }
         }
